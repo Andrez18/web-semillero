@@ -6,7 +6,7 @@
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-![just-the-basics](https://github.com/Andrez18/web-semillero/src/pages/index.astro.git)
+![just-the-basics](https://github.com/Andrez18/web-semillero.git)
 
 
 
