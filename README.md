@@ -1,8 +1,4 @@
-# Astro Starter Kit: Basics
 
-```sh
-npm create astro@latest -- --template basics
-```
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
 [![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
@@ -10,7 +6,7 @@ npm create astro@latest -- --template basics
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-![just-the-basics](https://github.com/Andrez18/web-semillero.git)
+![just-the-basics](https://github.com/Andrez18/web-semillero/src/pages/index.astro.git)
 
 
 
