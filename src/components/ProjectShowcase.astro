@@ -2,9 +2,9 @@
 const projects = [
   {
     id: 1,
-    name: "App Educativa",
-    description: "Aplicación móvil para aprendizaje interactivo",
-    technologies: ["JavaScript", "Firebase", "Node.js"],
+    name: "Sitio web de gestion para biblioteca",
+    description: "Sitio web para la gestion de una biblioteca institucional",
+    technologies: ["HTML/CSS","JavaScript", "php", "mysql"],
     image: "/placeholder.svg?height=200&width=300"
   },
   {
@@ -14,19 +14,19 @@ const projects = [
     technologies: ["HTML/CSS", "Express", "MongoDB"],
     image: "/placeholder.svg?height=200&width=300"
   },
-  // Add more projects as needed
 ];
 ---
 
 <div class="py-12">
   <h2 class="text-3xl font-bold text-center mb-8">Nuestros Proyectos</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center items-center">
     {projects.map((project) => (
       <div class="bg-gray-800 rounded-lg overflow-hidden cursor-pointer project-card" data-project={JSON.stringify(project)}>
         <img src={project.image} alt={project.name} class="w-full h-48 object-cover" />
         <div class="p-4">
           <h3 class="text-xl font-semibold mb-2">{project.name}</h3>
           <p class="text-gray-400">{project.description}</p>
+          <a class="text-sm text-primary  hover:scale-105 hover:contrast-150">{project.repository}</a>
         </div>
       </div>
     ))}
@@ -39,6 +39,7 @@ const projects = [
     <img id="modalImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4" />
     <p id="modalDescription" class="text-gray-400 mb-4"></p>
     <div id="modalTechnologies" class="flex flex-wrap gap-2"></div>
+    <a href="https://Andrez18/.github.io/Project_PIA" id="mocalRepository" class="text-xs text-primary transition-all duration-200 ease"></a>
   </div>
 </div>
 
@@ -49,6 +50,7 @@ const projects = [
   const modalImage = document.getElementById('modalImage');
   const modalDescription = document.getElementById('modalDescription');
   const modalTechnologies = document.getElementById('modalTechnologies');
+  const modalRepository =document.getElementById('modalRepository');
 
   projectCards.forEach(card => {
     card.addEventListener('click', () => {
@@ -58,7 +60,7 @@ const projects = [
       modalImage.alt = project.name;
       modalDescription.textContent = project.description;
       modalTechnologies.innerHTML = project.technologies.map(tech => 
-        `<span class="bg-yellow-500 text-gray-900 px-2 py-1 rounded text-sm">${tech}</span>`
+      `<span class="bg-yellow-500 text-gray-900 px-2 py-1 rounded text-sm">${tech}</span>`
       ).join('');
       projectModal.classList.remove('hidden');
     });
