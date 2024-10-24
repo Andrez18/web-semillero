@@ -1,0 +1,48 @@
+---
+const blogPosts = [
+  {
+    id: 1,
+    title: "Lanzamiento de PRODIG01",
+    excerpt: "Celebramos el inicio de nuestro semillero de programación y diseño...",
+    date: "2023-09-01"
+  },
+  {
+    id: 2,
+    title: "Éxito en nuestro primer hackathon",
+    excerpt: "Nuestros estudiantes brillaron en el evento de 48 horas...",
+    date: "2023-10-15"
+  },
+  // Add more blog posts as needed
+];
+---
+
+<div class="py-12">
+  <h2 class="text-3xl font-bold text-center mb-8">Últimas Noticias</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {blogPosts.map((post) => (
+      <div class="bg-gray-800 rounded-lg p-6 blog-card">
+        <h3 class="text-xl font-semibold mb-2">{post.title}</h3>
+        <p class="text-gray-400 mb-4">{post.excerpt}</p>
+        <p class="text-sm text-gray-500">{post.date}</p>
+      </div>
+    ))}
+  </div>
+  <div class="text-center mt-8">
+    <a href="/blog" class="inline-block px-6 py-3 bg-yellow-500 text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition duration-300">
+      Ver todas las noticias
+    </a>
+  </div>
+</div>
+
+<script>
+  const blogCards = document.querySelectorAll('.blog-card');
+  blogCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transform = 'scale(1.03)';
+      card.style.transition = 'transform 0.3s ease-in-out';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'scale(1)';
+    });
+  });
+</script>

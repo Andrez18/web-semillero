@@ -1,0 +1,88 @@
+---
+const faqs = [
+  {
+    question: "¿Qué es PRODIG01?",
+    answer: "PRODIG01 es un semillero de programación y diseño gráfico que une a estudiantes de la Institución Educativa Fundadores y la Institución Educativa Ciudadela de las Américas. Nuestro objetivo es formar y fortalecer las habilidades de los estudiantes en el campo de la tecnología y el diseño."
+  },
+  {
+    question: "¿Cómo puedo unirme a PRODIG01?",
+    answer: "Para unirte a PRODIG01, debes ser estudiante de la Institución Educativa Fundadores o la Institución Educativa Ciudadela de las Américas. Contacta a tu coordinador académico o visita nuestra página de contacto para obtener más información sobre el proceso de aplicación."
+  },
+  {
+    question: "¿Qué conocimientos previos necesito?",
+    answer: "No se requieren conocimientos previos específicos, pero es recomendable tener un interés en la programación y el diseño gráfico. Valoramos la curiosidad y la disposición para aprender. Nuestro programa está diseñado para acomodar a estudiantes de todos los niveles de experiencia."
+  },
+  {
+    question: "¿Cuál es el compromiso de tiempo requerido?",
+    answer: "PRODIG01 ofrece una estructura flexible. Generalmente, tenemos sesiones virtuales semanales y reuniones presenciales mensuales. El tiempo dedicado a proyectos puede variar, pero recomendamos reservar al menos 5-10 horas semanales para aprovechar al máximo el programa."
+  },
+  {
+    question: "¿Qué tipo de proyectos desarrollan en PRODIG01?",
+    answer: "Nuestros proyectos abarcan una amplia gama de aplicaciones, desde aplicaciones web y móviles hasta soluciones de diseño gráfico. Nos enfocamos en proyectos que resuelven problemas reales de nuestra comunidad educativa y local."
+  },
+  {
+    question: "¿Ofrecen certificaciones o reconocimientos?",
+    answer: "Sí, al completar proyectos específicos o alcanzar ciertos hitos en tu aprendizaje, otorgamos certificados de participación y logro. Estos pueden ser valiosos para tu futuro académico y profesional."
+  },
+  {
+    question: "¿Cómo se integra PRODIG01 con mis estudios regulares?",
+    answer: "PRODIG01 está diseñado para complementar tus estudios regulares. Trabajamos en estrecha colaboración con las instituciones educativas para asegurar que nuestras actividades no interfieran con tus responsabilidades académicas y, en su lugar, las enriquezcan."
+  },
+  {
+    question: "¿Tienen oportunidades para estudiantes con necesidades especiales?",
+    answer: "Absolutamente. PRODIG01 se enorgullece de ser un espacio inclusivo. Tenemos programas específicos para integrar a estudiantes con diversas capacidades, incluyendo estudiantes con autismo. Trabajamos para adaptar nuestras actividades y asegurar que todos puedan participar plenamente."
+  },
+  {
+    question: "¿Cómo puedo obtener más información o hacer preguntas adicionales?",
+    answer: "Puedes visitar nuestra página de contacto para enviarnos un mensaje directo. También organizamos sesiones informativas periódicas en ambas instituciones educativas. Sigue nuestras redes sociales para mantenerte informado sobre estas oportunidades."
+  }
+];
+---
+
+<div class="py-12 bg-gray-900">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8 text-white">Preguntas Frecuentes</h2>
+    <div class="max-w-3xl mx-auto">
+      {faqs.map((faq, index) => (
+        <div class="mb-4 faq-item">
+          <button class="w-full text-left p-4 bg-gray-800 rounded-lg focus:outline-none">
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-white">{faq.question}</span>
+              <span class="transform transition-transform duration-200 text-yellow-500">▼</span>
+            </div>
+          </button>
+          <div class="bg-gray-700 p-4 rounded-b-lg hidden">
+            <p class="text-gray-300">{faq.answer}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+const faqItems = document.querySelectorAll<HTMLElement>('.faq-item');
+faqItems.forEach((item) => {
+  const button = item.querySelector<HTMLButtonElement>('button');
+  const content = item.querySelector<HTMLElement>('div:last-child');
+  const arrow = button?.querySelector<HTMLElement>('span:last-child');
+  
+  button?.addEventListener('click', () => {
+    content?.classList.toggle('hidden');
+    if (arrow) {
+      arrow.style.transform = content?.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  });
+});
+
+// Add animation to FAQ items
+faqItems.forEach((item, index) => {
+  item.style.opacity = '0';
+  item.style.transform = 'translateY(20px)';
+  setTimeout(() => {
+    item.style.transition = 'opacity 0.5s, transform 0.5s';
+    item.style.opacity = '1';
+    item.style.transform = 'translateY(0)';
+  }, index * 100);
+});
+</script>
