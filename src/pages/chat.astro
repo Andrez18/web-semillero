@@ -1,0 +1,315 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Chat de Preguntas">
+  <div class="h-screen flex">
+    <!-- Barra lateral izquierda -->
+    <div class="w-1/4 bg-gray-100 p-6 flex flex-col">
+      <h1 class="text-2xl font-bold mb-4">Chat de Preguntas</h1>
+      <p class="mb-6">Bienvenido a nuestro chat de preguntas. Aquí puedes hacer preguntas sobre cualquier tema y obtener respuestas de la comunidad.</p>
+      
+      <h2 class="text-xl font-semibold mb-2">Opciones de Chat</h2>
+      <ul class="space-y-2">
+        <li><button class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-200 transition-colors" id="nueva-pregunta">Nueva Pregunta</button></li>
+        <li><button class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-200 transition-colors" id="mis-preguntas">Mis Preguntas</button></li>
+        <li><button class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-200 transition-colors" id="preguntas-populares">Preguntas Populares</button></li>
+      </ul>
+    </div>
+
+    <!-- Área principal de chat -->
+    <div class="flex-1 flex flex-col">
+      <!-- Mensajes del chat -->
+      <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
+        <!-- Los mensajes se insertarán aquí dinámicamente -->
+      </div>
+
+      <!-- Formulario de entrada de mensaje -->
+      <form id="chat-form" class="p-4 bg-gray-100">
+        <div class="flex space-x-2">
+          <input
+            type="text"
+            id="message-input"
+            class="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Escribe tu pregunta aquí..."
+            required
+          />
+          <button
+            type="submit"
+            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Enviar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de inicio de sesión -->
+  <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg">
+      <h2 class="text-xl font-bold mb-4">Iniciar Sesión</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="username" class="block mb-1">Usuario:</label>
+          <input type="text" id="username" class="w-full px-3 py-2 border rounded-lg" required>
+        </div>
+        <div>
+          <label for="password" class="block mb-1">Contraseña:</label>
+          <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg" required>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="cancel-login" class="px-4 py-2 bg-gray-300 rounded-lg">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Iniciar Sesión</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const nuevaPreguntaBtn = document.getElementById('nueva-pregunta');
+    const misPreguntasBtn = document.getElementById('mis-preguntas');
+    const preguntasPopularesBtn = document.getElementById('preguntas-populares');
+    const loginModal = document.getElementById('login-modal');
+    const loginForm = document.getElementById('login-form');
+    const cancelLoginBtn = document.getElementById('cancel-login');
+
+    let mensajes = [];
+    let usuarioActual = null;
+    let mensajeActual = null;
+
+    function crearElementoMensaje(mensaje, esRespuesta = false) {
+      const mensajeElement = document.createElement('div');
+      mensajeElement.classList.add('bg-white', 'rounded-lg', 'shadow', 'p-4', 'space-y-2');
+      if (esRespuesta) {
+        mensajeElement.classList.add('ml-8');
+      }
+
+      const headerElement = document.createElement('div');
+      headerElement.classList.add('flex', 'justify-between', 'items-center');
+
+      const autorElement = document.createElement('span');
+      autorElement.classList.add('font-semibold');
+      autorElement.textContent = mensaje.autor;
+      if (mensaje.esAdmin) {
+        autorElement.classList.add('text-red-500');
+        autorElement.textContent += ' (Admin)';
+      }
+      headerElement.appendChild(autorElement);
+
+      const estrellas = document.createElement('div');
+      estrellas.classList.add('flex', 'items-center');
+      for (let i = 0; i < 5; i++) {
+        const estrella = document.createElement('button');
+        estrella.innerHTML = '&#9733;';
+        estrella.classList.add('text-yellow-400', 'focus:outline-none');
+        estrella.addEventListener('click', () => calificarMensaje(mensaje.id, i + 1));
+        estrellas.appendChild(estrella);
+      }
+      const calificacion = document.createElement('span');
+      calificacion.textContent = mensaje.calificacion || '0';
+      calificacion.classList.add('ml-2');
+      estrellas.appendChild(calificacion);
+      headerElement.appendChild(estrellas);
+
+      mensajeElement.appendChild(headerElement);
+
+      const contenidoElement = document.createElement('p');
+      contenidoElement.textContent = mensaje.contenido;
+      mensajeElement.appendChild(contenidoElement);
+
+      if (!esRespuesta) {
+        const accionesElement = document.createElement('div');
+        accionesElement.classList.add('flex', 'space-x-2');
+
+        const verRespuestasBtn = document.createElement('button');
+        verRespuestasBtn.textContent = 'Ver Respuestas';
+        verRespuestasBtn.classList.add('text-blue-500', 'hover:underline');
+        verRespuestasBtn.addEventListener('click', () => toggleRespuestas(mensaje.id));
+
+        const responderBtn = document.createElement('button');
+        responderBtn.textContent = 'Responder';
+        responderBtn.classList.add('text-blue-500', 'hover:underline');
+        responderBtn.addEventListener('click', () => iniciarRespuesta(mensaje.id));
+
+        accionesElement.appendChild(verRespuestasBtn);
+        accionesElement.appendChild(responderBtn);
+        mensajeElement.appendChild(accionesElement);
+
+        const respuestasContainer = document.createElement('div');
+        respuestasContainer.id = `respuestas-${mensaje.id}`;
+        respuestasContainer.classList.add('hidden', 'space-y-2', 'mt-2');
+        mensajeElement.appendChild(respuestasContainer);
+
+        const formularioRespuestaContainer = document.createElement('div');
+        formularioRespuestaContainer.id = `formulario-respuesta-${mensaje.id}`;
+        formularioRespuestaContainer.classList.add('hidden', 'mt-2');
+        mensajeElement.appendChild(formularioRespuestaContainer);
+      }
+
+      return mensajeElement;
+    }
+
+    function agregarMensaje(contenido, idPadre = null, autor = 'Anónimo', esAdmin = false) {
+      const nuevoMensaje = {
+        id: Date.now(),
+        contenido,
+        autor,
+        esAdmin,
+        respuestas: [],
+        calificacion: 0
+      };
+
+      if (idPadre) {
+        const mensajePadre = mensajes.find(m => m.id === idPadre);
+        if (mensajePadre) {
+          mensajePadre.respuestas.push(nuevoMensaje);
+        }
+      } else {
+        mensajes.push(nuevoMensaje);
+      }
+
+      renderizarMensajes();
+    }
+
+    function renderizarMensajes() {
+      chatMessages.innerHTML = '';
+      mensajes.forEach(mensaje => {
+        const mensajeElement = crearElementoMensaje(mensaje);
+        chatMessages.appendChild(mensajeElement);
+
+        const respuestasContainer = mensajeElement.querySelector(`#respuestas-${mensaje.id}`);
+        mensaje.respuestas.forEach(respuesta => {
+          const respuestaElement = crearElementoMensaje(respuesta, true);
+          respuestasContainer.appendChild(respuestaElement);
+        });
+      });
+    }
+
+    function toggleRespuestas(idMensaje) {
+      const respuestasContainer = document.getElementById(`respuestas-${idMensaje}`);
+      respuestasContainer.classList.toggle('hidden');
+    }
+
+    function iniciarRespuesta(idMensaje) {
+      if (usuarioActual) {
+        mostrarFormularioRespuesta(idMensaje);
+      } else {
+        mensajeActual = idMensaje;
+        loginModal.classList.remove('hidden');
+      }
+    }
+
+    function mostrarFormularioRespuesta(idMensaje) {
+      const formularioRespuestaContainer = document.getElementById(`formulario-respuesta-${idMensaje}`);
+      formularioRespuestaContainer.innerHTML = '';
+      formularioRespuestaContainer.classList.remove('hidden');
+
+      const formularioRespuesta = document.createElement('form');
+      formularioRespuesta.classList.add('flex', 'space-x-2');
+
+      const inputRespuesta = document.createElement('input');
+      inputRespuesta.type = 'text';
+      inputRespuesta.placeholder = 'Escribe tu respuesta...';
+      inputRespuesta.classList.add('flex-grow', 'px-3', 'py-2', 'border', 'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500');
+      inputRespuesta.required = true;
+
+      const botonEnviar = document.createElement('button');
+      botonEnviar.type = 'submit';
+      botonEnviar.textContent = 'Responder';
+      botonEnviar.classList.add('px-4', 'py-2', 'bg-blue-500', 'text-white', 'rounded-lg', 'hover:bg-blue-600', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500');
+
+      formularioRespuesta.appendChild(inputRespuesta);
+      formularioRespuesta.appendChild(botonEnviar);
+
+      formularioRespuesta.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const contenidoRespuesta = inputRespuesta.value.trim();
+        if (contenidoRespuesta) {
+          agregarMensaje(contenidoRespuesta, idMensaje, usuarioActual.nombre, usuarioActual.esAdmin);
+          formularioRespuestaContainer.classList.add('hidden');
+        }
+      });
+
+      formularioRespuestaContainer.appendChild(formularioRespuesta);
+    }
+
+    function calificarMensaje(idMensaje, calificacion) {
+      const mensaje = mensajes.find(m => m.id === idMensaje) || 
+                      mensajes.flatMap(m => m.respuestas).find(r => r.id === idMensaje);
+      if (mensaje) {
+        mensaje.calificacion = calificacion;
+        renderizarMensajes();
+      }
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const mensaje = messageInput.value.trim();
+      if (mensaje) {
+        agregarMensaje(mensaje, null, usuarioActual ? usuarioActual.nombre : 'Anónimo', usuarioActual ? usuarioActual.esAdmin : false);
+        messageInput.value = '';
+      }
+    });
+
+    nuevaPreguntaBtn.addEventListener('click', () => {
+      messageInput.focus();
+    });
+
+    misPreguntasBtn.addEventListener('click', () => {
+      if (usuarioActual) {
+        const misMensajes = mensajes.filter(m => m.autor === usuarioActual.nombre);
+        chatMessages.innerHTML = '';
+        misMensajes.forEach(mensaje => {
+          const mensajeElement = crearElementoMensaje(mensaje);
+          chatMessages.appendChild(mensajeElement);
+        });
+      } else {
+        alert('Por favor, inicia sesión para ver tus preguntas.');
+      }
+    });
+
+    preguntasPopularesBtn.addEventListener('click', () => {
+      const mensajesPopulares = [...mensajes].sort((a, b) => b.calificacion - a.calificacion);
+      chatMessages.innerHTML = '';
+      mensajesPopulares.forEach(mensaje => {
+        const mensajeElement = crearElementoMensaje(mensaje);
+        chatMessages.appendChild(mensajeElement);
+      });
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Simulación de autenticación
+      if (username === 'admin' && password === 'admin') {
+        usuarioActual = { nombre: 'Administrador', esAdmin: true };
+      } else if (username === 'user' && password === 'user') {
+        usuarioActual = { nombre: 'Usuario', esAdmin: false };
+      } else {
+        alert('Credenciales incorrectas');
+        return;
+      }
+
+      loginModal.classList.add('hidden');
+      if (mensajeActual) {
+        mostrarFormularioRespuesta(mensajeActual);
+        mensajeActual = null;
+      }
+    });
+
+    cancelLoginBtn.addEventListener('click', () => {
+      loginModal.classList.add('hidden');
+      mensajeActual = null;
+    });
+
+    // Agregar mensajes iniciales
+    agregarMensaje("¡Bienvenido al chat de preguntas! Siéntete libre de hacer cualquier pregunta.", null, "Sistema", true);
+    agregarMensaje("¿Cómo puedo ayudarte  hoy?", null, "Asistente", true);
+  </script>
+</Layout>
