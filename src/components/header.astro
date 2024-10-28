@@ -20,7 +20,7 @@
           <li><a href="/" class="hover:text-primary transition-colors">Inicio</a></li>
           <li><a href="/sobre-nosotros" class="hover:text-primary transition-colors">Sobre Nosotros</a></li>
           <li><a href="/funcionamiento" class="hover:text-primary transition-colors">Funcionamiento</a></li>
-          <li><a href="/foro" class="hover:text-primary transition-colors">Foro</a></li>
+          <li><a href="#" id="foro" class="hover:text-primary transition-colors">Foro</a></li>
         </ul>
       </nav>
 
@@ -36,7 +36,7 @@
         <li><a href="/" class="block hover:text-primary transition-colors">Inicio</a></li>
         <li><a href="/sobre-nosotros" class="block hover:text-primary transition-colors">Sobre Nosotros</a></li>
         <li><a href="/funcionamiento" class="block hover:text-primary transition-colors">Funcionamiento</a></li>
-        <li><a href="/foro" class="block hover:text-primary transition-colors">Foro</a></li>
+        <li><a href="#" id="foro-mobile" class="block hover:text-primary transition-colors">Foro</a></li>
         <li>
           <a href="/contacto" class="block bg-primary hover:contrast-150 text-lg text-white font-semibold py-2 px-4 rounded-full transition-colors text-center">
             Contáctanos
@@ -53,5 +53,14 @@
 
   mobileMenuButton.addEventListener('click', () => {
     mobileMenu.classList.toggle('hidden');
+  });
+
+  // Agregar evento de alerta a los enlaces del foro
+  const foroLinks = document.querySelectorAll('#foro, #foro-mobile');
+  foroLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Estamos trabajando en esa nueva función. ¡Inténtalo otro día!');
+    });
   });
 </script>
